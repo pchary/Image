@@ -51,9 +51,8 @@ def TF_inv(sp_filtre):
     return np.abs(img_filtree)
 
 
-def execute(ltype, taille):
+def execute(url, ltype, taille):
     """ Programme principal """
-    url = "https://raw.githubusercontent.com/scipy-lectures/scipy-lecture-notes/master/data/moonlanding.png"
     response = requests.get(url)
     img = plt.imread(BytesIO(response.content))
     sp_shifte = TF(img)
@@ -78,5 +77,9 @@ def execute(ltype, taille):
     plt.show()
 
 if __name__ == '__main__':
-    execute("passe haut", 40)
-    execute("passe bas", 40)
+    url_root = "https://raw.githubusercontent.com/dombrno/Image/master/SampleImages/"
+    url_names = ["nebuleuse", "peter"]
+    url_list = [url_root + url_name + ".png" for url_name in url_names]
+    for url in url_list:
+        execute(url, "passe haut", 40)
+        execute(url, "passe bas", 40)
