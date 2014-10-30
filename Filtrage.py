@@ -70,7 +70,7 @@ def execute(url, ltype, proportion=0.03):
 
 if __name__ == '__main__':
     url_root = "https://raw.githubusercontent.com/dombrno/Image/master/SampleImages/"
-    url_names = ["Nebuleuse", "peter", "shark"]
+    url_names = ["Nebuleuse", "peter", "shark", "etang", "chateau"]
     url_list = [url_root + url_name + ".png" for url_name in url_names]
     for url in url_list:
         execute(url, "passe haut", 0.025)
