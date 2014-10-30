@@ -9,7 +9,6 @@ from io import BytesIO
 
 def TF(img):
     """ Calcul de la transforme de Fourier de l'image img"""
-
     spectre = np.fft.fft2(img)            # TF
     # Il faut decaler le spectre, sinon les basses frequences
     # sont dans les coins et non au centre...
@@ -19,25 +18,17 @@ def TF(img):
 
 def filtrage(spectre, type="passe haut", taille=40):
     """ Application d'un filtre passe haut ou passe bas,
-    de forme carre et de dimension taille, au spectre de Fourier
+    de forme carree et de dimension taille, au spectre de Fourier
     2D de l'image"""
     # nombre de lignes et de colonnes de l'image
     nblig, nbcol = spectre.shape
     # Coordonnees du centre
     clig, ccol = nblig // 2, nbcol // 2
-
+    masque = np.zeros((nblig, nbcol))
+    masque[clig-taille:clig+taille, ccol-taille:ccol+taille] = 1
     if type == "passe haut":
-        sp_filtre = spectre.copy()
-        # Mettre a 0 le carre central de sp_shifte
-        sp_filtre[clig-taille:clig+taille, ccol-taille:ccol+taille] = 0
-    elif type == "passe bas":
-        # On utilise un masque pour obtenir l'action complmentaire
-        # du cas precedent
-        masque = np.zeros((nblig, nbcol))
-        masque[clig-taille:clig+taille, ccol-taille:ccol+taille] = 1
-        sp_filtre = spectre * masque
-    else:
-        sp_filtre = spectre
+        masque = 1 - masque
+    sp_filtre = spectre * masque
     return sp_filtre
 
 
@@ -51,7 +42,7 @@ def TF_inv(sp_filtre):
     return np.abs(img_filtree)
 
 
-def execute(url, ltype, taille):
+def execute(url, ltype, taille=40):
     """ Programme principal """
     response = requests.get(url)
     img = plt.imread(BytesIO(response.content))
@@ -78,7 +69,7 @@ def execute(url, ltype, taille):
 
 if __name__ == '__main__':
     url_root = "https://raw.githubusercontent.com/dombrno/Image/master/SampleImages/"
-    url_names = ["nebuleuse", "peter"]
+    url_names = ["Nebuleuse", "peter"]
     url_list = [url_root + url_name + ".png" for url_name in url_names]
     for url in url_list:
         execute(url, "passe haut", 40)
