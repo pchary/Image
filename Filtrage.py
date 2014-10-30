@@ -16,7 +16,7 @@ def TF(img):
     return sp_shifte
 
 
-def filtrage(spectre, type="passe haut", taille=40):
+def filtrage(spectre, type="passe haut", proportion=0.03):
     """ Application d'un filtre passe haut ou passe bas,
     de forme carree et de dimension taille, au spectre de Fourier
     2D de l'image"""
@@ -24,7 +24,10 @@ def filtrage(spectre, type="passe haut", taille=40):
     nblig, nbcol = spectre.shape
     # Coordonnees du centre
     clig, ccol = nblig // 2, nbcol // 2
+    print nblig, nbcol
     masque = np.zeros((nblig, nbcol))
+    taille = int(proportion * (nblig + nbcol) / 2.0)
+    print "taille", taille
     masque[clig-taille:clig+taille, ccol-taille:ccol+taille] = 1
     if type == "passe haut":
         masque = 1 - masque
@@ -42,12 +45,12 @@ def TF_inv(sp_filtre):
     return np.abs(img_filtree)
 
 
-def execute(url, ltype, taille=40):
+def execute(url, ltype, proportion=0.03):
     """ Programme principal """
     response = requests.get(url)
     img = plt.imread(BytesIO(response.content))
     sp_shifte = TF(img)
-    sp_filtre = filtrage(sp_shifte, ltype, taille)
+    sp_filtre = filtrage(sp_shifte, ltype, proportion)
     img_filtree = TF_inv(sp_filtre)
     # Echelle logarithmique pour bien voir toutes les composantes spectrales
     # d'amplitudes trs diffrentes, le +1 est pour viter les valeurs nulles
@@ -72,5 +75,5 @@ if __name__ == '__main__':
     url_names = ["Nebuleuse", "peter"]
     url_list = [url_root + url_name + ".png" for url_name in url_names]
     for url in url_list:
-        execute(url, "passe haut", 40)
-        execute(url, "passe bas", 40)
+        execute(url, "passe haut", 0.025)
+        execute(url, "passe bas", 0.025)
